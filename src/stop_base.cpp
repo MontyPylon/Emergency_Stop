@@ -1,3 +1,5 @@
+#include "ros/ros.h"
+#include "std_msgs/String.h"
 #include <ros/ros.h>
 #include <tf/tf.h>
 #include <move_base_msgs/MoveBaseAction.h>
@@ -7,38 +9,31 @@
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/PoseArray.h"
 
-#include <vector>
-#include <iostream>
-
-bool stopBase = false;
-
+/**
+ * This tutorial demonstrates simple sending of messages over the ROS system.
+ */
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "stop_base");
   ros::NodeHandle n;
 
-  actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> ac("move_base",true);
-  move_base_msgs::MoveBaseGoal goal;
-  
+  ros::Publisher stop_pub = n.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 1000);
+
+
+  ros::Rate loop_rate(10);
+
+  actionlib_msgs::GoalID goal;
+
   while (ros::ok())
   {
-    if(stopBase) {
-      //set the header
-      goal.target_pose.header.stamp = ros::Time::now();
-      goal.target_pose.header.frame_id = "/base_link";
-      
-      //set relative x, y, and angle
-      goal.target_pose.pose.position.x = 0.0;
-      goal.target_pose.pose.position.y = 0.0;
-      goal.target_pose.pose.position.z = 0.0;
-      goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+    goal.stamp = ros::Time::now();
+    goal.id = "{}";
 
-  	//send the goal
-      ac.sendGoal(goal);
-      
-      //block until the action is completed
-      ac.waitForResult();
-    }
+    stop_pub.publish(goal);
+    ros::spinOnce();
+    loop_rate.sleep();
   }
+
+
   return 0;
 }

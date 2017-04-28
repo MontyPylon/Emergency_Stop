@@ -4,7 +4,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <robot_comm/Motor.h>
 
 using namespace std;
 
