@@ -20,7 +20,7 @@ void setup() {
   }  
   // initialize the LED pin as an output, and turn it on (LOW = ON):
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, HIGH);
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
 
@@ -34,6 +34,7 @@ void setup() {
   }
   Serial.println();
   Serial.println("Connected to wifi");
+  digitalWrite(LED_BUILTIN, LOW);
   printWifiStatus();
 
   Serial.println("\nWaiting for button press...");
