@@ -1,8 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#define ssid "MontyPylon"
-#define pass "soccer_robots"
+#define ssid "emergency_stop"
+#define pass "emergency_stop"
 WiFiUDP Udp;
 unsigned int localPort = 6000; // local port to listen on
 char packetBuffer[255]; //buffer to hold incoming packet
@@ -14,13 +14,13 @@ bool isPressed = false;
 int downCounter = 0;
 
 void setup() {
-  Serial.begin(11500);
+  Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }  
-  // initialize the LED pin as an output:
-  //pinMode(LED_BUILTIN, OUTPUT);
-  //digitalWrite(LED_BUILTIN, LOW);
+  // initialize the LED pin as an output, and turn it on (LOW = ON):
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
 
@@ -36,7 +36,7 @@ void setup() {
   Serial.println("Connected to wifi");
   printWifiStatus();
 
-  Serial.println("\nWaiting for incoming messages...");
+  Serial.println("\nWaiting for button press...");
   // if you get a connection, report back via serial:
   Udp.begin(localPort);
 }
@@ -54,17 +54,10 @@ void loop() {
 
     //digitalWrite(LED_BUILTIN, HIGH);
     
-    Udp.beginPacket("192.168.0.102", localPort);
-    Udp.write("stop1");
+    Udp.beginPacket("192.168.4.1", localPort);
+    Udp.write("stop");
     Udp.endPacket();
     delay(100);
-    Udp.beginPacket("192.168.0.102", localPort);
-    Udp.write("stop2");
-    Udp.endPacket();
-    delay(100);
-    Udp.beginPacket("192.168.0.102", localPort);
-    Udp.write("stop3");
-    Udp.endPacket();
     
     isPressed = true;
   } else if(buttonState == LOW) {
