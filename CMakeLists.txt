@@ -135,8 +135,8 @@ include_directories(
 add_executable(stop_base src/stop_base.cpp)
 target_link_libraries(stop_base ${catkin_LIBRARIES})
 
-add_executable(stop_base_UDP src/stop_base_UDP.cpp)
-target_link_libraries(stop_base_UDP ${catkin_LIBRARIES})
+#add_executable(stop_base_UDP src/stop_base_UDP.cpp)
+#target_link_libraries(stop_base_UDP ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
