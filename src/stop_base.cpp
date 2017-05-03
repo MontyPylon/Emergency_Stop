@@ -52,34 +52,42 @@ int main(int argc, char **argv)
   actionlib_msgs::GoalID goal;
 
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> ac("move_base",true);
-  move_base_msgs::MoveBaseGoal moveGoal;
+  move_base_msgs::MoveBaseGoal move_goal;
   
 
   while (ros::ok())
   {
     //std::cout << "loopin" << std::endl;
     if(globalPushed) {
+      
       std::cout << "Sending CANCEL ALL GOALS" << std::endl;
       goal.stamp = ros::Time::now();
       goal.id = "{}";
       stop_pub.publish(goal);
       globalPushed = false;
 
+      std::cout << "Checking for other nodes to cancel" << std::endl;
+      std::string nodes_running = exec("rosnode list");
+      //std::cout << nodes_running << std::endl;
 
-      
-      std::cout << "--------------------------" << std::endl;
-      std::cout << "Killing teleop_twist_keyboard node" << std::endl;
-      system("rosnode kill teleop_twist_keyboard");
+      std::size_t found = nodes_running.find("/teleop_twist_keyboard");
+      if (found != std::string::npos) {
+        std::cout << "Found teleop_twist_keyboard" << std::endl;
+        std::cout << "Killing teleop_twist_keyboard node" << std::endl;
 
-      moveGoal.target_pose.header.stamp = ros::Time::now();
-      moveGoal.target_pose.header.frame_id = "/base_link";
-      //set relative x, y, and angle
-      moveGoal.target_pose.pose.position.x = 0.0;
-      moveGoal.target_pose.pose.position.y = 0.0;
-      moveGoal.target_pose.pose.position.z = 0.0;
-      moveGoal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
-      //send the moveGoal
-      ac.sendGoal(moveGoal);
+        system("rosnode kill teleop_twist_keyboard");
+        move_goal.target_pose.header.stamp = ros::Time::now();
+        move_goal.target_pose.header.frame_id = "/base_link";
+        //set relative x, y, and angle
+        move_goal.target_pose.pose.position.x = 0.0;
+        move_goal.target_pose.pose.position.y = 0.0;
+        move_goal.target_pose.pose.position.z = 0.0;
+        move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+        //send the move_goal
+        ac.sendGoal(move_goal);
+      }
+
+      // TODO cancel kr execution goals
     }
 
     //loop_rate.sleep();
