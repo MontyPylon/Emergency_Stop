@@ -47,6 +47,13 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "stop_base");
   ros::NodeHandle n;
 
+  std::string custom = "none";
+
+  if(argc >= 2) {
+    custom = argv[1];
+    std::cout << "Parameter set to " << custom << std::endl;
+  }
+
   ros::Subscriber sub = n.subscribe("/emergency_pushed", 1000, emergency_pushed);
 
   ros::Publisher stop_pub = n.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 1000);
@@ -59,11 +66,13 @@ int main(int argc, char **argv)
 
   geometry_msgs::Twist twist;
 
+  //std::string plzkill = "none";
+  //n.getParam("plzkill", plzkill);
+
   while (ros::ok())
   {
     //std::cout << "loopin" << std::endl;
     if(globalPushed) {
-      
       std::cout << "Sending CANCEL ALL GOALS" << std::endl;
       goal.stamp = ros::Time::now();
       goal.id = "{}";
@@ -87,18 +96,6 @@ int main(int argc, char **argv)
         twist.angular.y = 0;
         twist.angular.z = 0;
         vel_pub.publish(twist);
-
-        /**
-        move_goal.target_pose.header.stamp = ros::Time::now();
-        move_goal.target_pose.header.frame_id = "/base_link";
-        //set relative x, y, and angle
-        move_goal.target_pose.pose.position.x = 0.0;
-        move_goal.target_pose.pose.position.y = 0.0;
-        move_goal.target_pose.pose.position.z = 0.0;
-        move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
-        //send the move_goal
-        ac.sendGoal(move_goal);
-        **/
       }
 
       std::size_t found2 = nodes_running.find("/action_executor");
@@ -124,6 +121,33 @@ int main(int argc, char **argv)
         //std::cout << "Killing /bwi_kr node" << std::endl;
 
         system("rosnode kill /bwi_kr");
+        move_goal.target_pose.header.stamp = ros::Time::now();
+        move_goal.target_pose.header.frame_id = "/base_link";
+        //set relative x, y, and angle
+        move_goal.target_pose.pose.position.x = 0.0;
+        move_goal.target_pose.pose.position.y = 0.0;
+        move_goal.target_pose.pose.position.z = 0.0;
+        move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+        //send the move_goal
+        ac.sendGoal(move_goal);
+      }
+
+      std::size_t found4 = nodes_running.find(custom);
+      if (found4 != std::string::npos) {
+        //std::cout << "Found /bwi_kr" << std::endl;
+        //std::cout << "Killing /bwi_kr node" << std::endl;
+        //std::string total = ("rosnode kill " + custom).c_str();
+        //std::cout << total << std::endl;
+        system(("rosnode kill " + custom).c_str());
+
+        twist.linear.x = 0; 
+        twist.linear.y = 0; 
+        twist.linear.z = 0;
+        twist.angular.x = 0; 
+        twist.angular.y = 0;
+        twist.angular.z = 0;
+        vel_pub.publish(twist);
+
         move_goal.target_pose.header.stamp = ros::Time::now();
         move_goal.target_pose.header.frame_id = "/base_link";
         //set relative x, y, and angle
