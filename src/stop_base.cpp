@@ -70,12 +70,46 @@ int main(int argc, char **argv)
       std::string nodes_running = exec("rosnode list");
       //std::cout << nodes_running << std::endl;
 
-      std::size_t found = nodes_running.find("/teleop_twist_keyboard");
-      if (found != std::string::npos) {
-        std::cout << "Found teleop_twist_keyboard" << std::endl;
-        std::cout << "Killing teleop_twist_keyboard node" << std::endl;
+      std::size_t found1 = nodes_running.find("/teleop_twist_keyboard");
+      if (found1 != std::string::npos) {
+        //std::cout << "Found teleop_twist_keyboard" << std::endl;
+        //std::cout << "Killing teleop_twist_keyboard node" << std::endl;
 
-        system("rosnode kill teleop_twist_keyboard");
+        system("rosnode kill /teleop_twist_keyboard");
+        move_goal.target_pose.header.stamp = ros::Time::now();
+        move_goal.target_pose.header.frame_id = "/base_link";
+        //set relative x, y, and angle
+        move_goal.target_pose.pose.position.x = 0.0;
+        move_goal.target_pose.pose.position.y = 0.0;
+        move_goal.target_pose.pose.position.z = 0.0;
+        move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+        //send the move_goal
+        ac.sendGoal(move_goal);
+      }
+
+      std::size_t found2 = nodes_running.find("/action_executor");
+      if (found2 != std::string::npos) {
+        //std::cout << "Found /action_executor" << std::endl;
+        //std::cout << "Killing /action_executor node" << std::endl;
+
+        system("rosnode kill /action_executor");
+        move_goal.target_pose.header.stamp = ros::Time::now();
+        move_goal.target_pose.header.frame_id = "/base_link";
+        //set relative x, y, and angle
+        move_goal.target_pose.pose.position.x = 0.0;
+        move_goal.target_pose.pose.position.y = 0.0;
+        move_goal.target_pose.pose.position.z = 0.0;
+        move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
+        //send the move_goal
+        ac.sendGoal(move_goal);
+      }
+
+      std::size_t found3 = nodes_running.find("/bwi_kr");
+      if (found3 != std::string::npos) {
+        //std::cout << "Found /bwi_kr" << std::endl;
+        //std::cout << "Killing /bwi_kr node" << std::endl;
+
+        system("rosnode kill /bwi_kr");
         move_goal.target_pose.header.stamp = ros::Time::now();
         move_goal.target_pose.header.frame_id = "/base_link";
         //set relative x, y, and angle
