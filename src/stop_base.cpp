@@ -82,12 +82,13 @@ int main(int argc, char **argv)
 
         twist.linear.x = 0; 
         twist.linear.y = 0; 
-        twist.linear.z = 0
+        twist.linear.z = 0;
         twist.angular.x = 0; 
-        twist.angular.y = 0; 
+        twist.angular.y = 0;
         twist.angular.z = 0;
         vel_pub.publish(twist);
 
+        /**
         move_goal.target_pose.header.stamp = ros::Time::now();
         move_goal.target_pose.header.frame_id = "/base_link";
         //set relative x, y, and angle
@@ -97,6 +98,7 @@ int main(int argc, char **argv)
         move_goal.target_pose.pose.orientation = tf::createQuaternionMsgFromYaw(0);
         //send the move_goal
         ac.sendGoal(move_goal);
+        **/
       }
 
       std::size_t found2 = nodes_running.find("/action_executor");
