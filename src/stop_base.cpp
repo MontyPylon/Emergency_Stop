@@ -7,6 +7,7 @@
 #include <actionlib/server/simple_action_server.h>
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/PoseArray.h"
+#include "geometry_msgs/Twist.h"
 #include <std_msgs/Bool.h>
 #include <iostream>
 #include <stdexcept>
@@ -49,11 +50,14 @@ int main(int argc, char **argv)
   ros::Subscriber sub = n.subscribe("/emergency_pushed", 1000, emergency_pushed);
 
   ros::Publisher stop_pub = n.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 1000);
+  ros::Publisher vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+
   actionlib_msgs::GoalID goal;
 
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> ac("move_base",true);
   move_base_msgs::MoveBaseGoal move_goal;
-  
+
+  geometry_msgs::Twist twist;
 
   while (ros::ok())
   {
@@ -74,8 +78,16 @@ int main(int argc, char **argv)
       if (found1 != std::string::npos) {
         //std::cout << "Found teleop_twist_keyboard" << std::endl;
         //std::cout << "Killing teleop_twist_keyboard node" << std::endl;
-
         system("rosnode kill /teleop_twist_keyboard");
+
+        twist.linear.x = 0; 
+        twist.linear.y = 0; 
+        twist.linear.z = 0
+        twist.angular.x = 0; 
+        twist.angular.y = 0; 
+        twist.angular.z = 0;
+        vel_pub.publish(twist);
+
         move_goal.target_pose.header.stamp = ros::Time::now();
         move_goal.target_pose.header.frame_id = "/base_link";
         //set relative x, y, and angle
